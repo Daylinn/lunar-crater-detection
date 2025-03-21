@@ -172,3 +172,60 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Project specific
+# Data directories - ignore contents but keep structure
+data/raw/*
+data/processed/*
+data/results/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/results/.gitkeep
+
+# Model files
+*.pth
+*.pt
+*.h5
+*.onnx
+*.pb
+*.tflite
+models/checkpoints/*
+!models/checkpoints/.gitkeep
+
+# Images and visualization outputs
+*.jpg
+*.jpeg
+*.png
+*.tif
+*.tiff
+# Uncomment these if you want to track specific image examples
+# !examples/*.jpg
+# !examples/*.png
+
+# Logs and results
+logs/
+tensorboard/
+wandb/
+mlruns/
+lightning_logs/
+*.csv
+*.tsv
+# Keep specific important CSVs if needed
+# !important_metadata.csv
+
+# Temporary experiment files
+*_temp/
+*_tmp/
+tmp/
+temp/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# IDE - Visual Studio Code (uncomment if using VSCode)
+# .vscode/
+# !.vscode/settings.json
+# !.vscode/tasks.json
+# !.vscode/launch.json
+# !.vscode/extensions.json
