@@ -26,9 +26,9 @@ This project implements a crater detection and classification system using deep 
 
 ## Team Members
 
-- [Your Name]: Project Lead & Data Pipeline
-- [Member 2]: Model Architecture & Training
-- [Member 3]: Evaluation & Integration
+- Daylin Hart: Project Lead & Data Pipeline
+- David Williams: Model Architecture & Training
+- Sasi Pavan Khadyoth Gunturu : Evaluation & Integration
 
 ## Usage
 
