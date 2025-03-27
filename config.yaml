@@ -1,0 +1,56 @@
+# Data Configuration
+data:
+  raw_data_path: "data/raw"
+  processed_data_path: "data/processed"
+  results_path: "data/results"
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  image_size: [256, 256]
+  batch_size: 32
+  num_workers: 4
+
+# Model Configuration
+model:
+  name: "crater_detector"
+  backbone: "resnet50"
+  num_classes: 2 # binary classification (crater vs non-crater)
+  pretrained: true
+  input_channels: 3
+
+# Training Configuration
+training:
+  epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler:
+    type: "cosine"
+    warmup_epochs: 5
+  early_stopping:
+    patience: 10
+    min_delta: 0.001
+
+# Augmentation Configuration
+augmentation:
+  train:
+    - type: "horizontal_flip"
+      probability: 0.5
+    - type: "vertical_flip"
+      probability: 0.5
+    - type: "rotate"
+      limit: [-15, 15]
+      probability: 0.5
+    - type: "brightness_contrast"
+      brightness_limit: [0.8, 1.2]
+      contrast_limit: [0.8, 1.2]
+      probability: 0.5
+  val:
+    - type: "resize"
+      height: 256
+      width: 256
+
+# Logging Configuration
+logging:
+  log_dir: "logs"
+  save_frequency: 1 # save model every N epochs
+  tensorboard: true

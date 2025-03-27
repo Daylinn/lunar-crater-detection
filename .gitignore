@@ -1,10 +1,53 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+data/raw/images/*
+data/raw/masks/*
+!data/raw/images/.gitkeep
+!data/raw/masks/.gitkeep
+model/*.pth
+results/*
+!results/.gitkeep
+
+# Logs
+*.log
+logs/
+tensorboard/
+
+# OS specific
+.DS_Store
+Thumbs.db
 
 # Distribution / packaging
 .Python
@@ -173,15 +216,6 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Project specific
-# Data directories - ignore contents but keep structure
-data/raw/*
-data/processed/*
-data/results/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-!data/results/.gitkeep
-
 # Model files
 *.pth
 *.pt
@@ -218,10 +252,6 @@ lightning_logs/
 *_tmp/
 tmp/
 temp/
-
-# OS specific
-.DS_Store
-Thumbs.db
 
 # IDE - Visual Studio Code (uncomment if using VSCode)
 # .vscode/

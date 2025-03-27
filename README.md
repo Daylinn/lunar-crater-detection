@@ -1,35 +1,81 @@
-# Crater Detection and Classification
+# Crater Detection with YOLOv5
 
-Deep learning system for detecting and classifying planetary craters based on morphological features.
-
-## Project Overview
-
-This project implements a crater detection and classification system using deep learning. It identifies craters in planetary images and classifies them based on their morphological characteristics.
-
-## Setup
-
-1. Clone this repository
-2. Install dependencies: `pip install -r requirements.txt`
-3. Download datasets (instructions in data/README.md)
+A deep learning project for detecting craters in lunar images using YOLOv5 architecture.
 
 ## Project Structure
 
-- `data/`: Dataset storage
-  - `raw/`: Original images and annotations
-  - `processed/`: Processed datasets ready for training
-  - `results/`: Output from model predictions
-- `models/`: Model definitions
-- `utils/`: Utility functions
-- `dataset/`: Dataset classes and processing
-- `ui/`: User interface components
-- `tests/`: Unit tests
+```
+crater-detection-classification/
+├── data/
+│   └── raw/
+│       └── images/          # Crater images
+├── model/
+│   ├── yolo_crater.py      # YOLOv5 model implementation
+│   └── crater_detector.pth # Trained model weights
+├── train.py                # Training script
+├── requirements.txt        # Project dependencies
+└── README.md              # Project documentation
+```
 
-## Team Members
+## Setup
 
-- [Your Name]: Project Lead & Data Pipeline
-- [Member 2]: Model Architecture & Training
-- [Member 3]: Evaluation & Integration
+1. Create a virtual environment:
 
-## Usage
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
-Instructions will be added as the project develops.
+2. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Place your crater images in the `data/raw/images/` directory.
+
+## Training
+
+To train the model:
+
+```bash
+python train.py
+```
+
+The script will:
+
+- Load and preprocess the images
+- Train the YOLOv5 model
+- Save the best model weights
+- Display training metrics
+
+## Model Architecture
+
+The project uses a YOLOv5-based architecture with:
+
+- CSP (Cross Stage Partial) backbone
+- PANet neck
+- Multi-scale detection heads
+- Attention mechanisms for feature enhancement
+
+## Data Format
+
+Images should be in JPG format. The model expects:
+
+- RGB images
+- Single crater per image (centered)
+- Standard YOLO format annotations
+
+## Dependencies
+
+- PyTorch
+- TorchVision
+- Albumentations
+- OpenCV
+- NumPy
+- Pillow
+- scikit-learn
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
