@@ -22,6 +22,7 @@ lunar-crater-detection/
 │   ├── train_yolo.py       # Training script
 │   ├── predict.py          # Prediction script
 │   ├── prepare_data.py     # Data preparation script
+│   ├── download_data.py    # Dataset download script
 │   └── evaluate.py         # Evaluation script
 ├── models/                  # Model architecture definitions
 ├── requirements.txt         # Project dependencies
@@ -33,7 +34,7 @@ lunar-crater-detection/
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/lunar-crater-detection.git
+git clone https://github.com/Daylinn/lunar-crater-detection.git
 cd lunar-crater-detection
 ```
 
@@ -49,6 +50,28 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
+
+4. Download the dataset:
+
+```bash
+cd scripts
+python download_data.py
+```
+
+Note: The dataset is not included in the repository due to its size. You'll need to:
+
+1. Either run the download script above to get the dataset automatically
+2. Or manually download the dataset from [DATASET_URL] and place it in the `data/` directory
+
+## Dataset
+
+The dataset consists of lunar images with annotated crater locations. It includes:
+
+- Training set: 80% of the data
+- Validation set: 10% of the data
+- Test set: 10% of the data
+
+Each image is accompanied by a YOLO format annotation file containing the crater locations.
 
 ## Usage
 
