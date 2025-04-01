@@ -9,9 +9,9 @@ Our system leverages deep learning to identify and localize craters in lunar ima
 ## Team Members
 
 - Daylin Hart - Lead Developer
-- David Williams
-- Lamont Carter
-- Sasi Pavan Khadyoth Gunturu
+- David Williams - Contributor
+- Lamont Carter - Contributor
+- Sasi Pavan Khadyoth Gunturu - Contributor
 
 ## Technical Implementation
 
@@ -74,11 +74,13 @@ Potential areas for future development:
 
 ## Contributing
 
-We welcome contributions and feedback from the research community. Feel free to:
+We welcome contributions from the research community! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) file for detailed guidelines on how to contribute to the project. This includes:
 
-- Test the implementation and report issues
-- Suggest improvements to the methodology
-- Fork the repository for your own research
+- Setting up your development environment
+- Code style guidelines
+- Pull request process
+- Areas for contribution
+- Communication guidelines
 
 ## License
 
