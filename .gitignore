@@ -1,0 +1,76 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific
+runs/
+*.pt
+*.pth
+*.weights
+*.onnx
+*.engine
+*.mlmodel
+*.tflite
+*.pb
+*.h5
+*.hdf5
+*.pkl
+*.npy
+*.npz
+*.csv
+*.log
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.tif
+*.tiff
+*.bmp
+*.ico
+*.xml
+*.json
+*.yaml
+*.yml
+*.txt
+*.md
+!README.md
+!requirements.txt
+!LICENSE
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# YOLOv5
+scripts/yolov5/ 
