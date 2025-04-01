@@ -1,18 +1,26 @@
+"""
+My lunar crater dataset preparation script.
+This script helps us organize our lunar images and labels into the right format for training.
+"""
+
 import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 import shutil
+import random
 
 def create_directories():
-    """Create necessary directories for YOLO training"""
-    base_dirs = ['train', 'valid', 'test']
-    sub_dirs = ['images', 'labels']
+    """Create the directory structure we need for our dataset."""
+    # Set up our main data directory
+    data_dir = Path('data')
+    data_dir.mkdir(exist_ok=True)
     
-    for base_dir in base_dirs:
-        for sub_dir in sub_dirs:
-            Path(f'../data/{base_dir}/{sub_dir}').mkdir(parents=True, exist_ok=True)
+    # Create directories for our dataset splits
+    for split in ['train', 'valid', 'test']:
+        (data_dir / split / 'images').mkdir(parents=True, exist_ok=True)
+        (data_dir / split / 'labels').mkdir(parents=True, exist_ok=True)
 
 def visualize_sample(image_path, label_path):
     """Visualize a sample image with its bounding boxes"""
@@ -84,51 +92,64 @@ def analyze_dataset():
             print(f"Total number of craters: {n_craters}")
             print(f"Average craters per image: {n_craters/n_images:.2f}")
 
-def split_dataset(source_dir, train_ratio=0.8, val_ratio=0.1):
-    """Split dataset into train/val/test sets"""
-    # Get all image files
-    image_files = list(Path(source_dir).glob('*.jpg')) + list(Path(source_dir).glob('*.png'))
-    np.random.shuffle(image_files)
+def split_dataset(image_dir, label_dir, train_ratio=0.8, valid_ratio=0.1):
+    """
+    Split our dataset into training, validation, and test sets.
+    We'll use 80% for training, 10% for validation, and 10% for testing.
+    """
+    # Get all our image files
+    image_files = list(Path(image_dir).glob('*.jpg'))
+    random.shuffle(image_files)
     
-    # Calculate split indices
-    n_total = len(image_files)
-    n_train = int(n_total * train_ratio)
-    n_val = int(n_total * val_ratio)
+    # Calculate how many images go in each split
+    total_images = len(image_files)
+    train_size = int(total_images * train_ratio)
+    valid_size = int(total_images * valid_ratio)
     
-    # Split files
-    train_files = image_files[:n_train]
-    val_files = image_files[n_train:n_train+n_val]
-    test_files = image_files[n_train+n_val:]
+    # Split our files
+    train_files = image_files[:train_size]
+    valid_files = image_files[train_size:train_size + valid_size]
+    test_files = image_files[train_size + valid_size:]
     
-    # Move files to appropriate directories
-    for img_path in train_files:
-        label_path = img_path.with_suffix('.txt')
-        shutil.copy2(img_path, f'../data/train/images/{img_path.name}')
-        if label_path.exists():
-            shutil.copy2(label_path, f'../data/train/labels/{label_path.name}')
-    
-    for img_path in val_files:
-        label_path = img_path.with_suffix('.txt')
-        shutil.copy2(img_path, f'../data/valid/images/{img_path.name}')
-        if label_path.exists():
-            shutil.copy2(label_path, f'../data/valid/labels/{label_path.name}')
-    
-    for img_path in test_files:
-        label_path = img_path.with_suffix('.txt')
-        shutil.copy2(img_path, f'../data/test/images/{img_path.name}')
-        if label_path.exists():
-            shutil.copy2(label_path, f'../data/test/labels/{label_path.name}')
+    # Move files to their respective directories
+    for files, split in [(train_files, 'train'), (valid_files, 'valid'), (test_files, 'test')]:
+        for img_path in files:
+            # Get the corresponding label file
+            label_path = Path(label_dir) / f"{img_path.stem}.txt"
+            
+            # Move image and label to their new locations
+            shutil.copy2(img_path, f'data/{split}/images/{img_path.name}')
+            if label_path.exists():
+                shutil.copy2(label_path, f'data/{split}/labels/{label_path.name}')
 
-if __name__ == "__main__":
-    # Create directories
+def create_yaml():
+    """Create the YAML configuration file for our dataset."""
+    yaml_content = """
+path: data  # dataset root dir
+train: train/images  # train images (relative to 'path')
+val: valid/images  # val images (relative to 'path')
+test: test/images  # test images (relative to 'path')
+
+# Classes
+names:
+  0: crater  # crater class
+"""
+    
+    with open('data/lunar_craters.yaml', 'w') as f:
+        f.write(yaml_content)
+
+def main():
+    """Main function to prepare our dataset."""
+    # Create our directory structure
     create_directories()
     
-    # Analyze dataset
-    print("Analyzing dataset...")
-    analyze_dataset()
+    # Split our dataset
+    split_dataset('raw_data/images', 'raw_data/labels')
     
-    # Visualize a sample
-    print("\nVisualizing a sample image...")
-    sample_img = next(Path('../data/train/images').glob('*'))
-    sample_label = Path('../data/train/labels') / sample_img.name.replace('.jpg', '.txt')
-    visualize_sample(sample_img, sample_label) 
+    # Create our YAML config
+    create_yaml()
+    
+    print("Dataset preparation complete! Check the 'data' directory for the organized dataset.")
+
+if __name__ == '__main__':
+    main() 

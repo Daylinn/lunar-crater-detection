@@ -1,4 +1,7 @@
-# scripts/evaluate.py
+"""
+My lunar crater detection evaluation script.
+This script helps us understand how well our model is performing at detecting craters.
+"""
 
 import os
 import cv2
@@ -7,6 +10,14 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
 from models.yolo_crater import YOLOv5
+import yaml
+from pathlib import Path
+from yolov5.utils.general import check_file, increment_path
+from yolov5.utils.metrics import ap_per_class
+from yolov5.utils.plots import plot_pr_curve, plot_confusion_matrix
+from yolov5.utils.torch_utils import select_device
+from yolov5.models.common import DetectMultiBackend
+from yolov5.utils.dataloaders import create_dataloader
 
 # Custom Dataset for evaluation (only loads images)
 class EvalDataset(Dataset):
@@ -28,50 +39,73 @@ class EvalDataset(Dataset):
         image = torch.from_numpy(image).permute(2, 0, 1)
         return image, self.image_files[idx]
 
-def evaluate():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+def evaluate_model(weights, data_yaml, imgsz=640, batch_size=32, conf_thres=0.001, iou_thres=0.6, device=''):
+    """
+    Evaluate our model's performance on the test set.
+    This will give us metrics like precision, recall, and mAP.
+    """
+    # Set up our device
+    device = select_device(device)
     
-    # Load the trained model checkpoint
-    model = YOLOv5(num_classes=1)
-    checkpoint_path = "checkpoints/yolov5_crater.pth"
-    model.load_state_dict(torch.load(checkpoint_path, map_location=device))
-    model.to(device)
+    # Load our model
+    model = DetectMultiBackend(weights, device=device)
+    stride, names, pt = model.stride, model.names, model.pt
+    
+    # Load our dataset configuration
+    data = check_file(data_yaml)
+    with open(data, encoding='ascii', errors='ignore') as f:
+        data = yaml.safe_load(f)
+    
+    # Create our test dataloader
+    test_loader = create_dataloader(data['test'],
+                                  imgsz=imgsz,
+                                  batch_size=batch_size,
+                                  stride=stride,
+                                  pad=0.5,
+                                  prefix=colorstr('val: '))[0]
+    
+    # Run evaluation
     model.eval()
+    stats = []
     
-    # Prepare evaluation dataset and DataLoader
-    eval_dataset = EvalDataset("data/test/images", img_size=640)
-    eval_loader = DataLoader(eval_dataset, batch_size=1, shuffle=False)
+    for batch_i, (im, targets, paths, shapes) in enumerate(test_loader):
+        im = im.to(device).float() / 255.0
+        targets = targets.to(device)
+        
+        # Forward pass
+        pred = model(im)
+        
+        # NMS
+        pred = non_max_suppression(pred, conf_thres, iou_thres)
+        
+        # Statistics
+        for si, pred in enumerate(pred):
+            labels = targets[targets[:, 0] == si, 1:]
+            stats.append((pred, labels))
     
-    for image, img_name in eval_loader:
-        image = image.to(device)
-        with torch.no_grad():
-            outputs = model(image)
-        # For simplicity, use the first predicted bounding box from the first grid cell
-        preds = outputs[:, 0, 0, 0, :]  # [B, 5+num_classes]
-        bbox_preds = preds[:, :4].cpu().numpy()[0]  # [x, y, w, h]
-        
-        # Convert image to numpy for plotting
-        img_np = image.cpu().squeeze().permute(1, 2, 0).numpy()
-        
-        # Assume coordinates are normalized; convert to pixel values
-        h, w, _ = img_np.shape
-        x_center, y_center, box_w, box_h = bbox_preds
-        x_center *= w
-        y_center *= h
-        box_w *= w
-        box_h *= h
-        
-        # Calculate top-left corner coordinates
-        x1 = int(x_center - box_w / 2)
-        y1 = int(y_center - box_h / 2)
-        
-        plt.figure(figsize=(6, 6))
-        plt.imshow(img_np)
-        rect = plt.Rectangle((x1, y1), int(box_w), int(box_h), edgecolor='red', facecolor='none', linewidth=2)
-        plt.gca().add_patch(rect)
-        plt.title(f"Prediction: {img_name[0]}")
-        plt.axis("off")
-        plt.show()
+    # Compute metrics
+    p, r, f1, mp, mr, map50, map = ap_per_class(*zip(*stats))
+    
+    # Print results
+    print(f'\nResults:')
+    print(f'Precision: {mp:.3f}')
+    print(f'Recall: {mr:.3f}')
+    print(f'F1-score: {f1:.3f}')
+    print(f'mAP50: {map50:.3f}')
+    print(f'mAP50-95: {map:.3f}')
+    
+    # Plot results
+    plot_pr_curve(p, r, ap, Path('results/pr_curve.png'))
+    plot_confusion_matrix(stats, save_dir=Path('results'))
 
-if __name__ == "__main__":
-    evaluate()
+def main():
+    """Main function to run our evaluation."""
+    # Set up our paths
+    weights = 'runs/detect/train/weights/best.pt'
+    data_yaml = 'data/lunar_craters.yaml'
+    
+    # Run evaluation
+    evaluate_model(weights, data_yaml)
+
+if __name__ == '__main__':
+    main()
