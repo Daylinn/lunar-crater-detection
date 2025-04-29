@@ -34,7 +34,8 @@ ENV/
 *.swo
 
 # Project specific
-runs/
+results/
+data/
 *.pt
 *.pth
 *.weights
@@ -58,19 +59,24 @@ runs/
 *.tiff
 *.bmp
 *.ico
-*.xml
-*.json
-*.yaml
-*.yml
-*.txt
-*.md
+
+# Keep important files
 !README.md
 !requirements.txt
 !LICENSE
+!config/*.yaml
+!data.yaml
+!config/evaluation.yaml
+!.gitignore
+!TEAM.md
 
 # OS specific
 .DS_Store
 Thumbs.db
 
-# YOLOv5
+# Jupyter
+.ipynb_checkpoints
+*.ipynb
+
+# YOLOv5 cloned repo
 scripts/yolov5/ 

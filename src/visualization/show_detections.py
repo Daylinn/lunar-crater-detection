@@ -5,6 +5,24 @@ A simple script to detect craters in lunar images and show the results.
 import cv2
 from ultralytics import YOLO
 import os
+import random
+
+def get_random_test_image():
+    """Get a random image from the test dataset."""
+    test_dir = "data/test/images"  # Updated path to be relative to project root
+    if not os.path.exists(test_dir):
+        print(f"Error: Test directory not found at {test_dir}")
+        return None
+    
+    # Get list of all image files
+    image_files = [f for f in os.listdir(test_dir) if f.endswith(('.jpg', '.jpeg', '.png'))]
+    if not image_files:
+        print("Error: No images found in test directory")
+        return None
+    
+    # Select random image
+    random_image = random.choice(image_files)
+    return os.path.join(test_dir, random_image)
 
 def show_detection(image_path, model_path, conf_threshold=0.25):
     # Load the model
@@ -52,10 +70,12 @@ def show_detection(image_path, model_path, conf_threshold=0.25):
 
 if __name__ == "__main__":
     # Path to the model weights
-    model_path = "runs/detect/train3/weights/best.pt"
+    model_path = "scripts/runs/detect/train3/weights/best.pt"  # Updated path to be relative to project root
     
-    # Path to the test image
-    image_path = "../data/test/images/mars_crater--97-_jpg.rf.63347c2ec963cf5c4ab641e1ba872df1.jpg"
-    
-    # Show detection
-    show_detection(image_path, model_path) 
+    # Get a random test image
+    image_path = get_random_test_image()
+    if image_path:
+        print(f"Processing image: {os.path.basename(image_path)}")
+        show_detection(image_path, model_path)
+    else:
+        print("Failed to find a test image to process.") 
